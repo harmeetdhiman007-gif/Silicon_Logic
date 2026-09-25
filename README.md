@@ -1,6 +1,6 @@
 ﻿# Silicon Logic — Learn Electronics
 
-A web + mobile electronics learning app built with **React + Vite + TypeScript + Capacitor** and backed by **MongoDB** for optional cross-device sync.
+A web + mobile electronics learning app built with **React + Vite + TypeScript + Capacitor** and backed by **Supabase (PostgreSQL)** for optional cross-device sync.
 
 Learn electronics the way you learn a language: 3-minute, game-like lessons with live circuit simulations. Tap the break in the loop. Fix the fault. Watch the LED light up — on a circuit that actually simulates.
 
@@ -43,30 +43,49 @@ npx vercel --prod # ship it
 
 Or on the dashboard: **New Project → import this GitHub repo → Vite preset → keep defaults** (vercel.json handles build command, output dir and SPA fallback) → **Deploy**.
 
-**Security note:** because there's no server, secrets stay out of the bundle. Don't build with `VITE_MONGODB_URI` set for a public deploy. Unset, the app runs perfectly local-first — nothing sensitive ships. To enable cross-device sync from a public/private deploy of your own, see the MongoDB section below.
+**Security note:** because there's no server, secrets stay out of the bundle. Don't build with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` set for a public deploy. Unset, the app runs perfectly local-first — nothing sensitive ships. To enable cross-device sync from a public/private deploy of your own, see the Supabase section below.
 
-## MongoDB sync (optional)
+## Supabase sync (optional)
 
 The app runs fully offline with zero accounts. To enable cross-device sync:
 
-1. Create a free MongoDB Atlas account: https://www.mongodb.com/cloud/atlas/register
-2. Create a cluster (free M0 tier)
-3. Get your connection string (looks like: `mongodb+srv://user:pass@cluster.mongodb.net/silo`)
-4. Copy `.env.example` to `.env.local` and put your connection string in `VITE_MONGODB_URI`
-5. The app auto-creates your player document (device-id based), and pushes XP, streaks, coins, nickname, and completed lessons after each save. A live weekly leaderboard ranks players by XP earned this week.
+1. Create a free Supabase account: https://supabase.com
+2. Create a new project
+3. Get your credentials from Dashboard → Settings → API Keys:
+   - Project URL: `https://xxx.supabase.co`
+   - Anon key: `eyJhbG...`
+4. Copy `.env.example` to `.env.local` and fill in:
+   - `VITE_SUPABASE_URL` = your project URL
+   - `VITE_SUPABASE_ANON_KEY` = your anon key
+5. The app auto-creates your player row (device-id based), and pushes XP, streaks, coins, nickname, and completed lessons after each save. A live weekly leaderboard ranks players by XP earned this week.
 
-**Database structure (MongoDB collections):**
+**Database structure (PostgreSQL tables):**
 
+```sql
+CREATE TABLE players (
+  id TEXT PRIMARY KEY,
+  nickname TEXT NOT NULL DEFAULT 'Explorer',
+  xp INTEGER NOT NULL DEFAULT 0,
+  coins INTEGER NOT NULL DEFAULT 0,
+  streak INTEGER NOT NULL DEFAULT 0,
+  lessons_completed INTEGER NOT NULL DEFAULT 0,
+  week_started DATE,
+  week_start_xp INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE completed_lessons (
+  player_id TEXT NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+  lesson_id TEXT NOT NULL,
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (player_id, lesson_id)
+);
 ```
-silo database:
-  - players: { _id, nickname, xp, streak, coins, lessons_completed[], week_started, week_start_xp, updated_at }
-  - lessons: { _id, title, description, category, difficulty, xpReward }
-  - progress: { _id, user, lesson, progress (0-100), completed, score, completedAt }
-```
 
-> `week_started` / `week_start_xp` power the **weekly leaderboard**: on the first sync of a new week the document records the XP total at the start of the week, so the leaderboard ranks by XP earned this week (`xp - week_start_xp`), not career totals.
+> `week_started` / `week_start_xp` power the **weekly leaderboard**: on the first sync of a new week the row records the XP total at the start of the week, so the leaderboard ranks by XP earned this week (`xp - week_start_xp`), not career totals.
 
-> ⚠️ **Security note**: embedding a MongoDB connection string in a client app is fine for a personal project. For a public release, proxy writes through your own API server instead.
+> ⚠️ **Security note**: the app uses the Supabase anon key for client-side access. This is fine for a personal project. For a public release, use row-level security (RLS) policies to restrict access.
 
 ## Building for mobile with Capacitor
 
