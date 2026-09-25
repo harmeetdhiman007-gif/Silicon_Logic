@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
 const url =
-  'postgresql://ohmie_app:npg_FkQth6JDu3NW@ep-steep-sea-b3tod37c-pooler.c-4.ap-southeast-1.aws.neon.tech/ohmie?sslmode=require';
+  'postgresql://SiLo_app:***@ep-steep-sea-b3tod37c-pooler.c-4.ap-southeast-1.aws.neon.tech/SiLo?sslmode=require';
 
 const sql = neon(url);
 

@@ -1,4 +1,4 @@
-const CACHE = 'ohmie-v1';
+const CACHE = 'SiLo-v1';
 const SHELL = [
   '/',
   '/index.html',

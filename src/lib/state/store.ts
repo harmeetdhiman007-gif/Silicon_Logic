@@ -355,7 +355,7 @@ export const useStore = create<AppState>()(
         set((s) => ({ labBuilds: (s.labBuilds ?? 0) + 1 })),
     }),
     {
-      name: 'ohmie-progress',
+      name: 'SiLo-progress',
       version: 3,
       partialize: (s) => ({
         xp: s.xp,

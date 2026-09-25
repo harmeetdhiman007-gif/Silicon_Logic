@@ -12,7 +12,7 @@ interface SavedLab {
   model: CircuitModel;
 }
 
-const SAVE_KEY = 'ohmie-lab-saves';
+const SAVE_KEY = 'SiLo-lab-saves';
 
 function readSaves(): SavedLab[] {
   try {

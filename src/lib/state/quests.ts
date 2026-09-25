@@ -58,7 +58,7 @@ const POOLS: QuestSeed[][] = [
 
 // 3 quests, one from each of 3 distinct pools.
 export function generateDailyQuests(dateStr: string): DailyQuest[] {
-  const rng = mulberry32(hashStr('ohmie-quests:' + dateStr));
+  const rng = mulberry32(hashStr('SiLo-quests:' + dateStr));
   const poolIdx = [rng(), rng(), rng()].map(
     (r) => Math.floor(r * 5) % POOLS.length,
   );

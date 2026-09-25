@@ -20,7 +20,7 @@ export function liveAiConfigured(): boolean {
   return Boolean(ENDPOINT && API_KEY);
 }
 
-const CACHE_KEY = 'ohmie-ai-cache';
+const CACHE_KEY = 'SiLo-ai-cache';
 
 interface CacheShape {
   [id: string]: string;

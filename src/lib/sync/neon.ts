@@ -25,10 +25,10 @@ export const sql = DATABASE_URL ? neon(DATABASE_URL) : null;
  * A signed-in user returns their account row id instead — see getActivePlayerId().
  */
 export function getDeviceId(): string {
-  let id = localStorage.getItem('ohmie-device-id');
+  let id = localStorage.getItem('SiLo-device-id');
   if (!id) {
     id = crypto.randomUUID();
-    localStorage.setItem('ohmie-device-id', id);
+    localStorage.setItem('SiLo-device-id', id);
   }
   return id;
 }

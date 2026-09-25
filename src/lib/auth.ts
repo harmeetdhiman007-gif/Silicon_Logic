@@ -3,7 +3,7 @@
  *
  * Passwords are never stored in plain text: a random per-user salt is stored
  * alongside a PBKDF2-SHA-256 hash derived in the browser. The active session
- * lives in localStorage (`ohmie-session`) and identifies which `players` row
+ * lives in localStorage (`SiLo-session`) and identifies which `players` row
  * progress writes land on (see getActivePlayerId).
  *
  * NOTE: like the sync module, this uses the database role from the client,
@@ -25,7 +25,7 @@ export interface AuthResult {
   session?: Session;
 }
 
-const SESSION_KEY = 'ohmie-session';
+const SESSION_KEY = 'SiLo-session';
 const PBKDF2_ITERATIONS = 100_000;
 
 export function getSession(): Session | null {

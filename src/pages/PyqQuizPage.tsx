@@ -7,7 +7,7 @@ import { useStore } from '../lib/state/store.js';
 import { playFx } from '../lib/sfx.js';
 
 const PYQ_XP_PER = 10;
-const TIER_KEY = 'ohmie-pyq-tier';
+const TIER_KEY = 'SiLo-pyq-tier';
 
 type Tier = 'all' | PyqDifficulty;
 

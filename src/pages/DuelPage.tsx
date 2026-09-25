@@ -21,7 +21,7 @@ const DIFFICULTY: Record<Difficulty, { label: string; accuracy: number }> = {
   hard: { label: '😤 Hard', accuracy: 0.88 },
 };
 const DIFFICULTY_ORDER: Difficulty[] = ['easy', 'medium', 'hard'];
-const DIFF_KEY = 'ohmie-duel-difficulty';
+const DIFF_KEY = 'SiLo-duel-difficulty';
 
 function loadDifficulty(): Difficulty {
   if (typeof localStorage === 'undefined') return 'medium';

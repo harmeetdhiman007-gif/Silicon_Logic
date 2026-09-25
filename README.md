@@ -52,7 +52,7 @@ The app runs fully offline with zero accounts. To enable cross-device sync:
 1. Copy `.env.example` to `.env.local` and put your connection string in `VITE_DATABASE_URL`.
 2. The app auto-creates your player row (device-id based), and pushes XP, streaks, coins, nicknamehare, and completed lessons after each save. A live weekly leaderboard ranks players by XP earned this week.
 
-The database (on the Neon `ohmie` project's branch) uses:
+The database (on the Neon `SiLo` project's branch) uses:
 
 ```sql
 CREATE TABLE players (
