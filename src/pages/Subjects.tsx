@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SUBJECTS, getLessonsForSubject, getUnitsFor } from '../lib/lessons/catalog.js';
 import { useStore } from '../lib/state/store.js';
-import { fetchLeaderboard, type LeaderboardEntry } from '../lib/sync/neon.js';
+import { fetchLeaderboard, type LeaderboardEntry } from '../lib/sync/mongodb.js';
 
 function LeaderboardCard() {
   const [rows, setRows] = useState<LeaderboardEntry[] | null>(null);

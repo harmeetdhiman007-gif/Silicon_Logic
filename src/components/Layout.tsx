@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useStore } from '../lib/state/store.js';
-import { initSync, pushProgress, markLesson } from '../lib/sync/neon.js';
+import { initSync, pushProgress, markLesson } from '../lib/sync/mongodb.js';
 import { getActivePlayerId } from '../lib/auth.js';
 
 const NAV = [

@@ -1,6 +1,6 @@
 ﻿# Silicon Logic — Learn Electronics
 
-A web + mobile electronics learning app built with **React + Vite + TypeScript + Capacitor** and backed by **Neon Postgres** for optional cross-device sync.
+A web + mobile electronics learning app built with **React + Vite + TypeScript + Capacitor** and backed by **MongoDB** for optional cross-device sync.
 
 Learn electronics the way you learn a language: 3-minute, game-like lessons with live circuit simulations. Tap the break in the loop. Fix the fault. Watch the LED light up — on a circuit that actually simulates.
 
@@ -11,7 +11,7 @@ Learn electronics the way you learn a language: 3-minute, game-like lessons with
 - 🏆 **Gamification** — XP, day streaks, daily quests, and a mascot (SiLo). Progress persists locally via `localStorage` (Zustand persist).
 - 🔧 **Circuit Lab** — an open bench with presets: flip switches, change resistor values (preset chips), battery voltage steppers — the LEDs respond live.
 - ⭐ **GATE PYQ + Studios** — practice past GATE papers by track (`/pyq`) and a Studio hub (`/studio`) for PCB Design and VLSI workbenches. Deep links are SPA-rewritten.
-- ☁️ **Neon sync (optional)** — progress follows you across devices: XP, streak, coins, nickname, and completed lessons push to your Neon database. A live **weekly leaderboard** ranks players by XP earned this week. Local-first by default; sync silently skips if no `VITE_DATABASE_URL`.
+- ☁️ **MongoDB sync (optional)** — progress follows you across devices: XP, streak, coins, nickname, and completed lessons push to your MongoDB database. A live **weekly leaderboard** ranks players by XP earned this week. Local-first by default; sync silently skips if no `VITE_MONGODB_URI`.
 - 📱 **Capacitor** — same codebase builds to Android / iOS / desktop.
 
 ## Quick start
@@ -43,45 +43,30 @@ npx vercel --prod # ship it
 
 Or on the dashboard: **New Project → import this GitHub repo → Vite preset → keep defaults** (vercel.json handles build command, output dir and SPA fallback) → **Deploy**.
 
-**Security note:** because there's no server, secrets stay out of the bundle. Don't build with `VITE_DATABASE_URL` / `VITE_AI_*` set for a public deploy. Unset, the app runs perfectly local-first — nothing sensitive ships. To enable cross-device sync from a public/private deploy of your own, see the Neon section below.
+**Security note:** because there's no server, secrets stay out of the bundle. Don't build with `VITE_MONGODB_URI` set for a public deploy. Unset, the app runs perfectly local-first — nothing sensitive ships. To enable cross-device sync from a public/private deploy of your own, see the MongoDB section below.
 
-## Neon sync (optional)
+## MongoDB sync (optional)
 
 The app runs fully offline with zero accounts. To enable cross-device sync:
 
-1. Copy `.env.example` to `.env.local` and put your connection string in `VITE_DATABASE_URL`.
-2. The app auto-creates your player row (device-id based), and pushes XP, streaks, coins, nicknamehare, and completed lessons after each save. A live weekly leaderboard ranks players by XP earned this week.
+1. Create a free MongoDB Atlas account: https://www.mongodb.com/cloud/atlas/register
+2. Create a cluster (free M0 tier)
+3. Get your connection string (looks like: `mongodb+srv://user:pass@cluster.mongodb.net/silo`)
+4. Copy `.env.example` to `.env.local` and put your connection string in `VITE_MONGODB_URI`
+5. The app auto-creates your player document (device-id based), and pushes XP, streaks, coins, nickname, and completed lessons after each save. A live weekly leaderboard ranks players by XP earned this week.
 
-The database (on the Neon `SiLo` project's branch) uses:
+**Database structure (MongoDB collections):**
 
-```sql
-CREATE TABLE players (
-  id TEXT PRIMARY KEY,
-  nickname TEXT NOT NULL DEFAULT 'Explorer',
-  xp INTEGER NOT NULL DEFAULT 0,
-  coins INTEGER NOT NULL DEFAULT 0,
-  streak INTEGER NOT NULL DEFAULT 0,
-  last_study_date DATE,
-  lessons_completed INTEGER NOT NULL DEFAULT 0,
-  week_started DATE,
-  week_start_xp INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX idx_players_week ON players (week_started, xp DESC);
-
-CREATE TABLE completed_lessons (
-  player_id TEXT NOT NULL REFERENCES players(id) ON DELETE CASCADE,
-  lesson_id TEXT NOT NULL,
-  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  PRIMARY KEY (player_id, lesson_id)
-);
+```
+silo database:
+  - players: { _id, nickname, xp, streak, coins, lessons_completed[], week_started, week_start_xp, updated_at }
+  - lessons: { _id, title, description, category, difficulty, xpReward }
+  - progress: { _id, user, lesson, progress (0-100), completed, score, completedAt }
 ```
 
-> `week_started` / `week_start_xp` power the **weekly leaderboard**: on the first sync of a new week the row records the XP total at the start of the week, so the leaderboard ranks by XP earned this week (`xp - week_start_xp`), not career totals.
+> `week_started` / `week_start_xp` power the **weekly leaderboard**: on the first sync of a new week the document records the XP total at the start of the week, so the leaderboard ranks by XP earned this week (`xp - week_start_xp`), not career totals.
 
-> ⚠️ **Security note**: embedding a Postgres connection string in a client app is fine for a personal project. For a public release, proxy writes through your own API server instead.
+> ⚠️ **Security note**: embedding a MongoDB connection string in a client app is fine for a personal project. For a public release, proxy writes through your own API server instead.
 
 ## Building for mobile with Capacitor
 

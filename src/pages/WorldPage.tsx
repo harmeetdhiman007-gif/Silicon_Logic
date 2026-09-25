@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchLeaderboard } from '../lib/sync/neon.js';
-import type { LeaderboardEntry } from '../lib/sync/neon.js';
+import { fetchLeaderboard } from '../lib/sync/mongodb.js';
+import type { LeaderboardEntry } from '../lib/sync/mongodb.js';
 
 const TRAINERS = [
   {
